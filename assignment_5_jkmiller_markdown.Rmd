@@ -1,0 +1,146 @@
+---
+title: "Assignment 5"
+author: "Jamie K. Miller"
+date: "November 28, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+### Load packages
+
+library(tidyverse)
+library(car)
+library(stargazer)
+library(ggplot2)
+library(dplyr)
+```
+
+```{r, include=FALSE}
+### Read in data and data source
+
+# 1. Male and Female graduate enrollment (1967 - 2015) data source
+
+grad_enrollment_1967_2015 <- read_csv("grad_enrollment_1967_2015.csv")
+
+# 49 obs of 4 variables
+
+# Table 303.80. Total postbaccalaureate fall enrollment in degree-granting postsecondary institutions, by attendance status, sex of student, and control of institution: 1967 through 2015												
+
+# NOTE: Data include unclassified graduate students. Data through 1995 are for institutions of higher education, while later data are for degree-granting institutions. Degree-granting institutions grant associate’s or higher degrees and participate in Title IV federal financial aid programs. The degree-granting classification is very similar to the earlier higher education classification, but it includes more 2-year colleges and excludes a few higher education institutions that did not grant degrees. Some data have been revised from previously published figures.													
+													
+# SOURCE: U.S. Department of Education, National Center for Education Statistics, Higher Education General Information Survey (HEGIS), "Fall Enrollment in Colleges and Universities" surveys, 1967 through 1985; Integrated Postsecondary Education Data System (IPEDS), "Fall Enrollment Survey" (IPEDS-EF:86-99); IPEDS Spring 2001 through Spring 2016, Fall Enrollment component; and Enrollment in Degree-Granting Institutions Projection Model, 2000 through 2026. (This table was prepared February 2017.)													
+													
+# Data: National Center for Education Statistics													
+# https://nces.ed.gov/programs/digest/d16/tables/dt16_303.80.asp													
+
+# reformated file and saved to csv. simplified columns
+# saved as 'grad_enrollment_1967_2015'
+
+#############################
+
+# 2. Shifts in female PhD recipients by field (1985, 2000, 2015)
+
+female_phd_by_field <- read_csv("female_phd_by_field.csv")
+
+# 4 obs of 7 variables
+
+# a Excludes respondents who did not report sex: 171 in 1995, 73 in 2000, 66 in 2005, 16 in 2010, and 7 in 2015.		# b Includes agricultural sciences and natural resources; biological and biomedical sciences; and health sciences.	# c Non-science and engineering fields not shown separately.										
+
+# SOURCE: National Science Foundation, National Center for Science and Engineering Statistics, Survey of Earned Doctorates.										
+
+# Table 14. Doctorate recipients, by broad field of study and sex: Selected years, 1985–2015
+
+# reformated file and saved to csv. simplified columns
+# saved as 'female_phd_by_field.csv'
+
+#############################
+
+# 3. Male and Female starting salaries
+
+median_salary <- read_csv("median_salary.csv")
+
+# 15 obs of 5 variables
+
+# Table 48. Median basic annual salary for doctorate recipients with definite postgraduation plans in the United States, by field of study, type of postgraduation plans, and sex: 2015, (Dollars)
+
+# NOTES: Median salaries in this table are the exact salary values of respondents at the 50th percentile of their frequency distribution; salary values have not been rounded. See table A-6 in the technical notes for a listing of major fields and their constituent subfields.									
+# SOURCE: National Science Foundation, National Center for Science and Engineering Statistics, Survey of Earned Doctorates, 2015.									
+
+# reformated file and saved to csv. simplified columns
+# saved as 'median_salary.csv'
+
+#############################
+
+# 4. faculty salary data (2008 - 2009 survey) data source
+
+faculty_salary_2008_2009 <- read_csv("faculty_salary_2008_2009.csv")
+
+# 397 obs of 6 variables
+
+# Faculty salary by rank, discipline, experience and sex
+# Fox J. and Weisberg, S. (2011) An R Companion to Applied Regression, Second Edition Sage.
+# The 2008-09 nine-month academic salary for Assistant Professors, Associate Professors and Professors in a college in the U.S. The data were collected as part of the on-going effort of the college's administration to monitor salary differences between male and female faculty members.
+
+# reformated file and saved to csv. simplified columns
+# Discipline (A = Theoretical, B = Applied) changed to 'field'
+# saved as 'faculty_salary_2008_2009.csv'
+
+```
+
+```{r}
+# 1. Male and Female graduate enrollment (1967 - 2015)
+# Basic Linear regression for female and male graduate student enrollments 
+
+enrollment_female_lm1 <- lm(grad_enrollment_1967_2015$total_females ~ grad_enrollment_1967_2015$Year)
+enrollment_female_lm1
+
+enrollment_female_lm2 <- lm(total_females ~ Year, data = grad_enrollment_1967_2015)
+enrollment_female_lm2
+
+enrollment_male_lm1 <- lm(grad_enrollment_1967_2015$total_males ~ grad_enrollment_1967_2015$Year)
+enrollment_male_lm1
+
+enrollment_male_lm2 <- lm(total_males ~ Year, data = grad_enrollment_1967_2015)
+enrollment_male_lm2
+
+# Two ways to do the exact same test.
+
+```
+
+```{r, include = FALSE}
+# 1. Male and Female graduate enrollment (1967 - 2015)
+# Model diagnostics
+
+par(mfrow = c(2,2))
+plot(enrollment_female_lm2)
+
+par(mfrow = c(2,2))
+plot(enrollment_male_lm2)
+
+# I guess the residuals are normally distributed.
+
+```
+
+```{r}
+# 1. Male and Female graduate enrollment (1967 - 2015)
+
+enrollment_graph <- ggplot(grad_enrollment_1967_2015, aes(x = Year)) +
+  geom_point(aes(y = total_females, color = "Female")) +
+  geom_smooth(aes(x = Year, y = total_females), method = lm, se = TRUE, size = 0.5, color = "gray20") +
+  geom_point(aes(y = total_males, color = "Male")) +
+  geom_smooth(aes(x = Year, y = total_males), method = lm, se = TRUE, size = 0.5, color = "gray20") +
+  theme_classic() +
+  ylab("Enrolled Students\n") +
+  xlab("\nYear") +
+  ggtitle("Graduate Student Enrollment by Year (1967 - 2015)") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(legend.title = element_blank())
+  
+enrollment_graph
+
+```
+
