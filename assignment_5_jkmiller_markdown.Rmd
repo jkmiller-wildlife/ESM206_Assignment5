@@ -90,18 +90,18 @@ faculty_salary_2008_2009 <- read_csv("faculty_salary_2008_2009.csv")
 
 ```
 
-```{r}
+```{r, echo = FALSE}
 # 1. Male and Female graduate enrollment (1967 - 2015)
 # Basic Linear regression for female and male graduate student enrollments 
 
 enrollment_female_lm1 <- lm(grad_enrollment_1967_2015$total_females ~ grad_enrollment_1967_2015$Year)
-enrollment_female_lm1
+#enrollment_female_lm1
 
 enrollment_female_lm2 <- lm(total_females ~ Year, data = grad_enrollment_1967_2015)
 enrollment_female_lm2
 
 enrollment_male_lm1 <- lm(grad_enrollment_1967_2015$total_males ~ grad_enrollment_1967_2015$Year)
-enrollment_male_lm1
+#enrollment_male_lm1
 
 enrollment_male_lm2 <- lm(total_males ~ Year, data = grad_enrollment_1967_2015)
 enrollment_male_lm2
@@ -124,18 +124,33 @@ plot(enrollment_male_lm2)
 
 ```
 
-```{r}
+```{r, echo = FALSE}
 # 1. Male and Female graduate enrollment (1967 - 2015)
 # Model fit and significance
 
-summary(enrollment_female_lm2)
+summary_f_enrollment_lm2 <- summary(enrollment_female_lm2)
+summary_f_enrollment_lm2
 
-summary(enrollment_male_lm2)
+summary_m_enrollment_lm2 <- summary(enrollment_male_lm2)
+summary_m_enrollment_lm2
 
 ```
 
+```{r, echo = FALSE}
+# 1. Male and Female graduate enrollment (1967 - 2015)
+# Pearson's *r* correlation output
 
-```{r}
+pearsonsr_f_enrollment_year <- cor.test(grad_enrollment_1967_2015$total_females,
+         grad_enrollment_1967_2015$Year)
+pearsonsr_f_enrollment_year
+
+pearsonsr_m_enrollment_year <- cor.test(grad_enrollment_1967_2015$total_males,
+         grad_enrollment_1967_2015$Year)
+pearsonsr_m_enrollment_year
+
+```
+
+```{r, echo = FALSE}
 # 1. Male and Female graduate enrollment (1967 - 2015)
 
 enrollment_graph <- ggplot(grad_enrollment_1967_2015, aes(x = Year)) +
