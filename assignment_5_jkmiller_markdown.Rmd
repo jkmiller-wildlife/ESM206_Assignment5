@@ -89,9 +89,9 @@ faculty_salary_2008_2009 <- read_csv("faculty_salary_2008_2009.csv")
 # saved as 'faculty_salary_2008_2009.csv'
 
 ```
+### 1. Male and Female graduate enrollment (1967 - 2015)
+```{r, echo = FALSE, include = FALSE}
 
-```{r, echo = FALSE}
-# 1. Male and Female graduate enrollment (1967 - 2015)
 # Basic Linear regression for female and male graduate student enrollments 
 
 enrollment_female_lm1 <- lm(grad_enrollment_1967_2015$total_females ~ grad_enrollment_1967_2015$Year)
@@ -124,7 +124,7 @@ plot(enrollment_male_lm2)
 
 ```
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, , include = FALSE}
 # 1. Male and Female graduate enrollment (1967 - 2015)
 # Model fit and significance
 
@@ -136,7 +136,7 @@ summary_m_enrollment_lm2
 
 ```
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, include = FALSE}
 # 1. Male and Female graduate enrollment (1967 - 2015)
 # Pearson's *r* correlation output
 
@@ -169,3 +169,8 @@ enrollment_graph
 
 ```
 
+Graduate enrollment of female students is significantly predicted by year (*b* = 30126, t(`r pearsonsr_f_enrollment_year$parameter`) = `r round(pearsonsr_f_enrollment_year$statistic,2)`, *p* < 0.001) with a strong positive correlation between the two (Pearson's *r* = `r round(pearsonsr_f_enrollment_year$estimate,2)`. The model (*enrolled students* = 30126(*Year*) - 58955502) explains a significant amount of variance in female graduate student enrollment (F(1,47) = 2669, *p* < 0.001, $R^2$ = 0.98).
+
+Similarly, the model (*enrolled students* = 9069(*Year*) - 17112153) explains a significant amount of variance in male graduate student enrollment (F(1,47) = 276, *p* < 0.001, $R^2$ = 0.85). Graduate enrollment of male students is also significantly predicted by year (*b* = 9069, t(`r pearsonsr_m_enrollment_year$parameter`) = `r round(pearsonsr_m_enrollment_year$statistic,2)`, *p* < 0.001) with a strong positive correlation between the two (Pearson's *r* = `r round(pearsonsr_m_enrollment_year$estimate,2)`.
+
+Graduate enrollment generally increased for both male and female students from 1967 to 2015, though enrollment of female graduate students increased faster than enrollment of male students. In 1967 women comprised 29.6% of all enrolled graduate students. The sex ratio of graduate students switched from to male-biased to female biased in 1988 when the percentage of female students increased from 49.8% of all students in 1987 to 50.3% in 1988. By 2015, 58.5% of graduate students were female.  In recent years, enrollment leveled and even decreased slightly staring in 2010 following the 2008/2009 financial crisis.
