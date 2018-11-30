@@ -126,6 +126,17 @@ plot(enrollment_male_lm2)
 
 ```{r}
 # 1. Male and Female graduate enrollment (1967 - 2015)
+# Model fit and significance
+
+summary(enrollment_female_lm2)
+
+summary(enrollment_male_lm2)
+
+```
+
+
+```{r}
+# 1. Male and Female graduate enrollment (1967 - 2015)
 
 enrollment_graph <- ggplot(grad_enrollment_1967_2015, aes(x = Year)) +
   geom_point(aes(y = total_females, color = "Female")) +

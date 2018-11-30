@@ -170,6 +170,47 @@ enrollment_male_lm2</code></pre>
 ##   -17112153         9069</code></pre>
 <pre class="r"><code># Two ways to do the exact same test.</code></pre>
 <pre class="r"><code># 1. Male and Female graduate enrollment (1967 - 2015)
+# Model fir and significance
+
+summary(enrollment_female_lm2)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = total_females ~ Year, data = grad_enrollment_1967_2015)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -89397 -48101  -7633  45267 129727 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -5.896e+07  1.161e+06  -50.77   &lt;2e-16 ***
+## Year         3.013e+04  5.832e+02   51.66   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 57730 on 47 degrees of freedom
+## Multiple R-squared:  0.9827, Adjusted R-squared:  0.9823 
+## F-statistic:  2669 on 1 and 47 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>summary(enrollment_male_lm2)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = total_males ~ Year, data = grad_enrollment_1967_2015)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -96461 -34861 -12841  51876  95766 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -17112153    1087024  -15.74   &lt;2e-16 ***
+## Year             9069        546   16.61   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 54050 on 47 degrees of freedom
+## Multiple R-squared:  0.8545, Adjusted R-squared:  0.8514 
+## F-statistic:   276 on 1 and 47 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code># 1. Male and Female graduate enrollment (1967 - 2015)
 
 enrollment_graph &lt;- ggplot(grad_enrollment_1967_2015, aes(x = Year)) +
   geom_point(aes(y = total_females, color = &quot;Female&quot;)) +
