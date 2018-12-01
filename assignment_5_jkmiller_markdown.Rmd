@@ -382,4 +382,4 @@ lm_table_2 <- stargazer(faculty_salary_lm2, faculty_salary_lm3, faculty_salary_l
 lm_table_2
 
 ```
-
+End code for now 11/30/18 JKM
