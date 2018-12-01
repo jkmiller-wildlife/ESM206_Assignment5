@@ -1,0 +1,73 @@
+---
+title: "assign_5_p2"
+author: "Karan Shetty"
+date: "November 30, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Part 2: Is there a significant shift in female PhD recipients across four fields (Physical & Earth Sciences, Engineering, Education, and Humanities & Arts) across 15-year intervals from 1985, 2000, and 2015? 
+
+```{r}
+# Loading necessary packages
+
+library(tidyverse)
+library(car)
+library(stargazer)
+library(kableExtra)
+
+```
+
+```{r}
+# Reading in .csv datasets and performing exploratory analyses on the data
+
+fem_phd = read_csv("female_phd_by_field.csv")
+
+# cursory glance indicates there is a increase in female PhD recipients in all four fields in 1985, 2000, and 2015. But are these increases statistically significant?
+
+# creating a new df with just the percentages
+
+fem_phd_percent = fem_phd %>%
+  rename("1985" = "1985_percent", "2000" = "2000_percent", "2015" = "2015_percent") %>% 
+  select(field, "1985", "2000", "2015")
+
+fem_phd_1 = fem_phd %>% 
+  rename("1985" = "1985_number", "2000" = "2000_number", "2015" = "2015_number") %>% 
+  select("1985", "2000", "2015")
+
+fem_phd_00 = fem_phd %>% 
+  rename("1985" = "1985_number", "2000" = "2000_number", "2015" = "2015_number") %>% 
+  select("2000")
+
+fem_phd_15 = fem_phd %>% 
+  rename("1985" = "1985_number", "2000" = "2000_number", "2015" = "2015_number") %>% 
+  select("2015")
+
+chi_test = chisq.test(fem_phd_1)
+chi_test
+
+eng_phd = fem_phd_count %>% 
+  filter(field == "Engineering") %>% 
+  select("1985", "2000", "2015")
+
+eng_chi = chisq.test(eng_phd)
+eng_chi
+
+edu_phd = fem_phd_count %>% 
+  filter(field == "Education") %>% 
+  select("1985", "2000", "2015")
+
+edu_chi = chisq.test(edu_phd)
+edu_chi
+
+hum_phd = fem_phd_count %>% 
+  filter(field == "Humanities and arts") %>% 
+  select("1985", "2000", "2015")
+
+# I'm playing around with a few different things and figuring out the best way to interpret the data
+
+```
+
