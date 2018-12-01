@@ -76,7 +76,11 @@ median_salary <- read_csv("median_salary.csv")
 
 # 4. faculty salary data (2008 - 2009 survey) data source
 
-faculty_salary_2008_2009 <- read_csv("faculty_salary_2008_2009.csv")
+faculty_salary_2008_2009 <- read_csv("faculty_salary_2008_2009.csv") %>%
+  mutate(field_name = case_when(
+    field == "A" ~ "Theoretical",
+    field == "B" ~ "Applied"
+  ))
 
 # 397 obs of 6 variables
 
@@ -89,7 +93,7 @@ faculty_salary_2008_2009 <- read_csv("faculty_salary_2008_2009.csv")
 # saved as 'faculty_salary_2008_2009.csv'
 
 ```
-### 1. Male and Female graduate enrollment (1967 - 2015)
+## 1. Male and Female graduate enrollment (1967 - 2015)
 ```{r, echo = FALSE, include = FALSE}
 
 # Basic Linear regression for female and male graduate student enrollments 
@@ -176,3 +180,206 @@ Graduate enrollment of female students is significantly predicted by year (*b* =
 Similarly, the model (*enrolled students* = 9069(*Year*) - 17112153) explains a significant amount of variance in male graduate student enrollment (F(1,47) = 276, *p* < 0.001, $R^2$ = 0.85). Graduate enrollment of male students is also significantly predicted by year (*b* = 9069, t(`r pearsonsr_m_enrollment_year$parameter`) = `r round(pearsonsr_m_enrollment_year$statistic,2)`, *p* < 0.001) with a strong positive correlation between the two (Pearson's *r* = `r round(pearsonsr_m_enrollment_year$estimate,2)`.
 
 Graduate enrollment generally increased for both male and female students from 1967 to 2015, though enrollment of female graduate students increased faster than enrollment of male students. In 1967 women comprised 29.6% of all enrolled graduate students. The sex ratio of graduate students switched from to male-biased to female biased in 1988 when the percentage of female students increased from 49.8% of all students in 1987 to 50.3% in 1988. By 2015, 58.5% of graduate students were female.  In recent years, enrollment leveled and even decreased slightly staring in 2010 following the 2008/2009 financial crisis.
+
+
+## Part 4. Exploring academic salaries for professors in U.S. colleges.
+#### First by Rank
+```{r}
+# Part 4. Exploring academic salaries for professors in U.S. colleges.
+# Faculty salary by rank, discipline, experience and sex
+
+# Calculate mean salary by rank
+mean_by_rank <- faculty_salary_2008_2009 %>% 
+  group_by(rank) %>% 
+  summarize(
+    mean = mean(salary)
+  )
+
+# Visualize salary by rank
+by_rank <- ggplot(faculty_salary_2008_2009, aes(x = salary)) +
+  geom_density(aes(color = rank, fill = rank), alpha = 0.3) +
+  theme_classic() +
+  scale_x_continuous(expand = c(0,0), limits = c(0,250000)) +
+  scale_y_continuous(expand = c(0,0)) +
+  labs(x = "Salary (USD)", y = "Density")
+
+by_rank
+
+# So far, graphically, this appears to be the biggest driver.
+
+```
+
+#### By Sex
+```{r}
+# Part 4. Exploring academic salaries for professors in U.S. colleges.
+# Faculty salary by rank, discipline, experience and sex
+
+# Calculate mean salary by sex
+mean_by_sex <- faculty_salary_2008_2009 %>% 
+  group_by(sex) %>% 
+  summarize(
+    mean = mean(salary)
+  )
+
+# Visualize salary by sex
+by_sex <- ggplot(faculty_salary_2008_2009, aes(x = salary)) +
+  geom_density(aes(color = sex, fill = sex), alpha = 0.3) +
+  theme_classic() +
+  scale_x_continuous(expand = c(0,0), limits = c(0,250000)) +
+  scale_y_continuous(expand = c(0,0)) +
+  labs(x = "Salary (USD)", y = "Density")
+
+by_sex
+
+```
+
+#### By Field
+```{r}
+# Part 4. Exploring academic salaries for professors in U.S. colleges.
+# Faculty salary by rank, discipline, experience and sex
+# Discipline (A = Theoretical, B = Applied) changed to 'field'
+
+# Calculate mean salary by Experience - Years Since PhD
+mean_by_field <- faculty_salary_2008_2009 %>% 
+  group_by(field_name) %>% 
+  summarize(
+    mean = mean(salary)
+  )
+
+# Visualize salary by Experience - Years Since PhD
+by_field <- ggplot(faculty_salary_2008_2009, aes(x = salary)) +
+  geom_density(aes(color = field_name, fill = field_name), alpha = 0.3) + 
+  theme_classic() +
+  scale_x_continuous(expand = c(0,0), limits = c(0,250000)) +
+  scale_y_continuous(expand = c(0,0)) +
+  labs(x = "Salary (USD)", y = "Density")
+
+by_field
+
+```
+
+#### By Years Experience
+```{r}
+# Part 4. Exploring academic salaries for professors in U.S. colleges.
+# Faculty salary by rank, discipline, experience and sex
+
+# Since yrs after phd and yrs service are continuous, and possibly collinear, will show them graphically.
+
+by_yrs_phd <- ggplot(faculty_salary_2008_2009, aes(x = salary, y = years_since_phd)) +
+  geom_point(aes(color = rank, pch = sex), alpha = 0.5) +
+  facet_wrap(~field_name)
+
+by_yrs_phd
+
+# Does years service look the same?
+
+by_yrs_service <- ggplot(faculty_salary_2008_2009, aes(x = salary, y = years_service)) +
+  geom_point(aes(color = rank, pch = sex), alpha = 0.5) +
+  facet_wrap(~field_name)
+
+by_yrs_service
+
+# Similar trend, but not the same. Might be collinear. Should test.
+
+```
+
+```{r}
+# Part 4. Exploring academic salaries for professors in U.S. colleges.
+# Faculty salary by rank, discipline, experience and sex
+# GLM with all factors
+
+faculty_salary_lm1 <- lm(salary ~ rank + field_name + sex + years_since_phd + years_service, data = faculty_salary_2008_2009)
+
+summary(faculty_salary_lm1)
+
+```
+
+```{r}
+# Part 4. Exploring academic salaries for professors in U.S. colleges.
+# Faculty salary by rank, discipline, experience and sex
+# GLM with all factors 
+# change rank reference level from AssocProf to AsstProf since it is the lowest. change from character to factor
+
+faculty_salary_2008_2009$rank <- factor(faculty_salary_2008_2009$rank)
+
+faculty_salary_2008_2009$rank <- fct_relevel(faculty_salary_2008_2009$rank, "AsstProf")
+
+faculty_salary_lm2 <- lm(salary ~ rank + field_name + sex + years_since_phd + years_service, data = faculty_salary_2008_2009)
+
+summary(faculty_salary_lm2)
+```
+
+```{r}
+# Part 4. Exploring academic salaries for professors in U.S. colleges.
+# Faculty salary by rank, discipline, experience and sex
+# GLM - remove years_service
+
+faculty_salary_lm3 <- lm(salary ~ rank + field_name + sex + years_since_phd, data = faculty_salary_2008_2009)
+
+summary(faculty_salary_lm3)
+```
+
+```{r}
+# Part 4. Exploring academic salaries for professors in U.S. colleges.
+# Faculty salary by rank, discipline, experience and sex
+# GLM - remove years_since phd
+
+faculty_salary_lm4 <- lm(salary ~ rank + field_name + sex + years_service, data = faculty_salary_2008_2009)
+
+summary(faculty_salary_lm4)
+```
+
+```{r}
+# Part 4. Exploring academic salaries for professors in U.S. colleges.
+# Faculty salary by rank, discipline, experience and sex
+# GLM - for kicks, remove years experience
+
+faculty_salary_lm5 <- lm(salary ~ rank + field_name + sex, data = faculty_salary_2008_2009)
+
+summary(faculty_salary_lm5)
+```
+
+
+```{r, include=FALSE}
+# Part 4. Exploring academic salaries for professors in U.S. colleges.
+# Faculty salary by rank, discipline, experience and sex
+# Model Diagnostics all factors - Model 2
+
+plot(faculty_salary_lm2)
+
+# Some concern with homoscedasticity of upper values
+
+plot(faculty_salary_lm5)
+
+# This didn't help explain anything. Only categorical variables are in this model, but still more variance at higher values than lower values.
+
+```
+
+```{r}
+# Part 4. Exploring academic salaries for professors in U.S. colleges.
+# Faculty salary by rank, discipline, experience and sex
+# AIC values for each model
+
+sat_aic <- AIC(faculty_salary_lm2) # Lowest AIC value
+phd_aic <- AIC(faculty_salary_lm3)
+service_aic <- AIC(faculty_salary_lm4)
+remove_exp_aic <- AIC(faculty_salary_lm5)
+
+```
+
+
+```{r stargazer, results = 'asis'}
+# Part 4. Exploring academic salaries for professors in U.S. colleges.
+# Faculty salary by rank, discipline, experience and sex
+# Prepare regression table
+
+lm_table_1 <- stargazer(faculty_salary_lm2, type = "html")
+lm_table_1
+
+# For kicks, a table with all the models.
+
+lm_table_2 <- stargazer(faculty_salary_lm2, faculty_salary_lm3, faculty_salary_lm4, faculty_salary_lm5, type = "html")
+lm_table_2
+
+```
+
