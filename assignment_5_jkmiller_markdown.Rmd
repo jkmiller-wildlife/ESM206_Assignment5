@@ -169,6 +169,8 @@ enrollment_graph
 
 ```
 
+**Figure 1. Graduate strudent enrollment by year from 1967 to 2015.** Fall enrollment of female and male students each year from 1967 to 2015.  *SOURCE: U.S. Department of Education, National Center for Education Statistics, Higher Education General Information Survey (HEGIS), "Fall Enrollment in Colleges and Universities" surveys, 1967 through 1985; Integrated Postsecondary Education Data System (IPEDS), "Fall Enrollment Survey" (IPEDS-EF:86-99); IPEDS Spring 2001 through Spring 2016, Fall Enrollment component. Prepared February 2017.*	
+
 Graduate enrollment of female students is significantly predicted by year (*b* = 30126, t(`r pearsonsr_f_enrollment_year$parameter`) = `r round(pearsonsr_f_enrollment_year$statistic,2)`, *p* < 0.001) with a strong positive correlation between the two (Pearson's *r* = `r round(pearsonsr_f_enrollment_year$estimate,2)`. The model (*enrolled students* = 30126(*Year*) - 58955502) explains a significant amount of variance in female graduate student enrollment (F(1,47) = 2669, *p* < 0.001, $R^2$ = 0.98).
 
 Similarly, the model (*enrolled students* = 9069(*Year*) - 17112153) explains a significant amount of variance in male graduate student enrollment (F(1,47) = 276, *p* < 0.001, $R^2$ = 0.85). Graduate enrollment of male students is also significantly predicted by year (*b* = 9069, t(`r pearsonsr_m_enrollment_year$parameter`) = `r round(pearsonsr_m_enrollment_year$statistic,2)`, *p* < 0.001) with a strong positive correlation between the two (Pearson's *r* = `r round(pearsonsr_m_enrollment_year$estimate,2)`.
