@@ -113,7 +113,7 @@ post_wsr
 
 #Error Message: Cannot compute exact p-value with ties; cannot compute exact p-value with zeros, bypass 
 
-#Results: W = 117, p-value = 0.8671 
+#Results: V = 19.5, p-value = 0.8884
 #P-value > alpha of 0.05 (accept the null hypothesis stating that median salary does not differ significantly between male and female starting postdoc positions (ranks are equal))
 
 ```
@@ -131,7 +131,7 @@ doc_wsr
 
 #Error Message: Cannot compute exact p-value with ties; cannot compute exact p-value with zeros, bypass 
 
-#Results: V = 101 p-value: 0.002572 
+#Results: V = 101, p-value: 0.002572 
 #P-Value < alpha of 0.05 (reject the null hypothesis, accept the alternative hypothesis stating that median salary does not differ significantly between male and female PhD recipients in non-postdoc employment positions (ranks are not equal)
 ```
 
@@ -165,4 +165,39 @@ cdposttest
 #Results: Delta's estimate: 0.04 (negligible)
 
 ```
+```{r, echo=FALSE}
+#Writing the intrepretation for median salary differing signficiantly between male and female recipients starting postdoc positions
+
+#Question: Does median salary differ significantly between male and female starting postdoc positions? 
+
+#Null Hypothesis (H0): Median salary does not differ significantly between male and female starting postdoc positions (ranks are equal)
+
+#Alternative Hypothesis (HA): Median salary does differ signfiicantly between male and female starting postoc positions (ranks are not equal)
+
+#Results: V = 19.5, p-value = 0.8884  
+#P-value > alpha of 0.05 (accept the null hypothesis stating that median salary does not differ significantly between male and female starting postdoc positions (ranks are equal))
+
+#Results: Cliff Delta's estimate: 0.04 (negligible)
+
+#Intrepretation: Non-parametric Wilcoxon Signed-Rank for data collected regarding median basic annual salary for male and female doctorate recipients starting postdoc positions revealed that the median salary does not differ significantly between male and female doctorate recipients starting postdoc positions (V = 19.5, p = 0.8884). Cliff's Delta for the median basic annual salary for male and female doctorate recipients starting postdoc positions was negligible since it was below an effect size of 0.15 (CD = 0.04). This means that ranks from the male doctorate recipients starting postdoc positions did not exceed ranks from the female doctorate recipients starting postdoc positions. 
+```
+
+```{r}
+#Writing the intrepretation for median salary differing significantly between male and female recipients in non-postdoc employment positions 
+
+#Question: Does median salary differ significantly between male and female recipients in non-postdoc employment positions? 
+
+#Null Hypothesis (H0): Median salary does not differ significantly between male and female PhD recipients in non-postdoc employment positions (ranks are equal)
+
+#Alternative Hypothesis (HA): Median salary does differ significantly between male and female PhD recipients in non-postdoc employment positions (ranks are not equal)
+
+#Results: V = 101, p-value: 0.002572 
+#P-Value < alpha of 0.05 (reject the null hypothesis, accept the alternative hypothesis stating that median salary does not differ significantly between male and female PhD recipients in non-postdoc employment positions (ranks are not equal)
+
+#Results: Delta's estimate: 0.21333 (small)
+
+#Intrepretation: Non-parametric Wilcoxon Signed-Rank for data collected regarding median basic annual salary for male and female doctorate recipients in non-postdoc employment positions revealed that the median salary does differ signficiantly between male and female doctorate recipients in non-postdoc employment positions (V = 101, p = 0.002572). Cliff's Delta for the median salary for male and female doctorate recipients starting non-postdoc employment positions was small since it was i between the effect sizes of 0.15 and 0.30. This would means that ranks from the male doctorate recipients starting non-postdoc employment positions rarely exceeded ranks from the female doctorate reciients starting non-postdoc employment positions. 
+
+```
+
 
