@@ -30,9 +30,9 @@ fem_phd = read_csv("female_phd_by_field.csv")
 
 # creating a new df with just the percentages
 
-fem_phd_percent = fem_phd %>%
-  rename("1985" = "1985_percent", "2000" = "2000_percent", "2015" = "2015_percent") %>% 
-  select(field, "1985", "2000", "2015")
+fem_phd_count = fem_phd %>%
+  rename("1985" = "1985_number", "2000" = "2000_number", "2015" = "2015_number", "Field" = "field") %>% 
+  select(Field, "1985", "2000", "2015")
 
 fem_phd_1 = fem_phd %>% 
   rename("1985" = "1985_number", "2000" = "2000_number", "2015" = "2015_number") %>% 
@@ -46,28 +46,88 @@ fem_phd_15 = fem_phd %>%
   rename("1985" = "1985_number", "2000" = "2000_number", "2015" = "2015_number") %>% 
   select("2015")
 
-chi_test = chisq.test(fem_phd_1)
-chi_test
 
-eng_phd = fem_phd_count %>% 
-  filter(field == "Engineering") %>% 
-  select("1985", "2000", "2015")
 
-eng_chi = chisq.test(eng_phd)
-eng_chi
-
-edu_phd = fem_phd_count %>% 
-  filter(field == "Education") %>% 
-  select("1985", "2000", "2015")
-
-edu_chi = chisq.test(edu_phd)
-edu_chi
-
-hum_phd = fem_phd_count %>% 
-  filter(field == "Humanities and arts") %>% 
-  select("1985", "2000", "2015")
 
 # I'm playing around with a few different things and figuring out the best way to interpret the data
+
+```
+
+
+Making a contingency table
+```{r}
+phys = c(569, 1022, 1988)
+eng = c(198, 838, 2301)
+edu = c(3491, 4179, 3502)
+hum = c(1392, 2672, 2832)
+
+
+# making a data table with just counts
+fem_phd_table = rbind(phys, eng, edu, hum)
+colnames(fem_phd_table) = c("1985", "2000", "2015")
+rownames(fem_phd_table) = c("Physical and Earth Sciences", "Engineering", "Education", "Humanities and Arts")
+fem_phd_table
+
+
+
+# use prop.table
+
+
+fem_phd_prop = prop.table(fem_phd_table, margin = 2)
+fem_phd_prop # shows proportion of PhDs awarded in 1985, 2000, and 2015
+
+phd_prop_rounded = round(fem_phd_prop, 2)
+phd_prop_rounded
+
+phd_prop_clean = kable(phd_prop_rounded) %>% 
+  kable_styling()
+
+
+phd_prop_clean
+
+```
+
+
+
+```{r}
+#chi-squared tests to test for significant differences in female PhD enrollment between 1985, 2000, and 2015 by department. Is there an association between year and department enrolled in?
+
+#H0: There is no association between year and department enrolled in for women (the variables are independent)
+#Ha: There is an association between year and department enrolled in for women (the variables are dependent)
+
+fem_phd_chi = chisq.test(fem_phd_table)
+fem_phd_chi
+
+# X² = 2073.3, p < 0.0001, df = 6, alpha = 0.05. There is a significant shift in female PhD enrollment between departments from 1985 to 2015. Physical Sciences & Earth Sciences and Engineering saw the largest increases in female enrollment.
+
+# Observed counts vs expected: residuals. If standardized residuals are > |2|, then that count might be driving a significant result 
+
+fem_phd_chi$observed
+fem_phd_chi$expected
+fem_phd_chi$stdres
+
+# all the standardized residuals are > |2|
+
+```
+
+
+
+
+```{r}
+# column graph of results
+
+fem_phd_expand = data.frame(expand.grid(rownames(fem_phd_prop), colnames(fem_phd_prop)), value = c(fem_phd_prop))
+colnames(fem_phd_expand) = c("Field", "Year", "Proportion")
+
+fem_phd_expand
+
+fem_phd_graph = ggplot(fem_phd_expand, aes(x = Field, y = Proportion)) +
+  geom_col(aes(fill = Year), width = 0.5, color = "white") +
+  theme_minimal()+
+  labs(y = "Proportion of Women", title = "Proportion of PhDs Awarded to Women by Field (1985, 2000, 2015)")
+
+
+fem_phd_graph
 
 ```
 
