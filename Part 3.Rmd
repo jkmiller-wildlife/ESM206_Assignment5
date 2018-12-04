@@ -1,0 +1,168 @@
+---
+title: "ESM 206: HW#5, Part 3"
+author: "Nathaniel Burola"
+date: "December 1, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Instructions: Compare median salaries for male and female doctorate recipients in 2015. Answer these two questions:
+Does median salary differ significantly between male and female starting postdoc positions? Does
+median salary differ significantly between male and female PhD recipients in non-postdoc employment
+positions?
+
+```{r, include = FALSE}
+#Installing all the necessary packages in the R Markdown document 
+  library(tidyverse)
+  library(dplyr)
+  library(pwr)
+  library(knitr)
+  library(kableExtra)
+  library(plotly)
+  library(ggrepel)
+  library(extrafont)
+  library(tinytex)
+  library(RColorBrewer)
+  library(ggpubr)
+  library(effsize)
+  library(reshape2)
+
+```
+
+```{r,include = FALSE}
+#Reading the median salary csv file into the R Markdown document 
+#Employ = Employment of doctorate students per gender (male/female)
+#Post = Doctorate students with postgraduate plans per gender (male/female)
+#Data was already organized prior to beginning Part 3 of the assignment 
+#Renamed several columns in the median_salary document and added a new column name called field 
+
+median <- read.csv("median_salary.csv")
+
+```
+
+```{r, echo=FALSE}
+#Doing some data exploratory graphs to visualize the data 
+
+#Scatterplot graph for the employment of doctorate students (male vs female)
+emale <- ggplot(median, aes(x = field)) + 
+  geom_point(aes(y = empl_male, color = "Male")) + 
+  geom_smooth(aes(x = field, y = empl_male), method = lm, se = TRUE, size = 0.5, color = "gray20") + 
+  geom_point(aes(y = empl_female, color = "Female")) + 
+  geom_smooth(aes(x = field, y = empl_female), method = lm, se = TRUE, size = 0.5, color = "gray20") + 
+  theme_classic() + 
+  ylab("Employed Doctorate Students\n") + 
+  xlab("\nField") + 
+  ggtitle(" Employment of Doctorate Students Per Field With Median Incomes (2015)") + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(legend.title = element_blank())
+
+#Scatterplot graph for the postdoctoral students (male vs female)
+
+post <- ggplot(median, aes(x = field)) + 
+  geom_point(aes(y = post_male, color = "Male")) + 
+  geom_smooth(aes(x = field, y = post_male), method = lm, se = TRUE, size = 0.5, color = "gray20") + 
+  geom_point(aes(y = post_female, color = "Female")) + 
+  geom_smooth(aes(x = field, y = post_female), method = lm, se = TRUE, size = 0.5, color = "gray20") + 
+  theme_classic() + 
+  ylab("Employed Doctorate Students\n") + 
+  xlab("\nField") + 
+  ggtitle(" Employment of Postdoc Students Per Field with Median Incomes (2015)") + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(legend.title = element_blank())
+
+post
+```
+
+```{r, echo=FALSE}
+#Deciding which type of statistical analysis to test with the data 
+#Comparing differences between 2 groups (male vs female doctorate or postdoctoral students) leaves two possibilities with the 2 sample t-test and the Mann-Whitney U/Wilcoxon Signed Rank test 
+#Not comparing means, we are comparing medians therefore the Mann-Whitney U/Wilcoxon Signed Rank test with ranked data 
+#Is the data paired or unpaired? 
+#Data is paired since we are comparing male postdoc salaries in one department to female postdoc salaires in another departmen
+
+```
+
+```{r}
+#Performing the Wilcoxon Signed Rank test in R 
+#Samples are not independent from one another 
+
+#Investigating what type of class the data is in already 
+
+class(median$post_male) #Integer class 
+class(median$post_female) #Integer class
+class(median$empl_male) #Integer class 
+class(median$empl_female)#Integer class 
+
+#All of the data columns are in an integer state
+
+```
+
+```{r, echo = FALSE}
+#Question: Does median salary differ significantly between male and female starting postdoc positions? 
+
+#Null Hypothesis (H0): Median salary does not differ significantly between male and female starting postdoc positions (ranks are equal)
+
+#Alternative Hypothesis (HA): Median salary does differ signfiicantly between male and female starting postoc positions (ranks are not equal)
+
+post_wsr <- wilcox.test(median$post_male, median$post_female, paired = TRUE)
+
+post_wsr
+
+#Error Message: Cannot compute exact p-value with ties; cannot compute exact p-value with zeros, bypass 
+
+#Results: W = 117, p-value = 0.8671 
+#P-value > alpha of 0.05 (accept the null hypothesis stating that median salary does not differ significantly between male and female starting postdoc positions (ranks are equal))
+
+```
+
+```{r, echo = FALSE}
+#Question: Does median salary differ significantly between male and female recipients in non-postdoc employment positions? 
+
+#Null Hypothesis (H0): Median salary does not differ significantly between male and female PhD recipients in non-postdoc employment positions (ranks are equal)
+
+#Alternative Hypothesis (HA): Median salary does differ significantly between male and female PhD recipients in non-postdoc employment positions (ranks are not equal)
+
+doc_wsr <- wilcox.test(median$empl_male, median$empl_female, paired = TRUE)
+
+doc_wsr
+
+#Error Message: Cannot compute exact p-value with ties; cannot compute exact p-value with zeros, bypass 
+
+#Results: V = 101 p-value: 0.002572 
+#P-Value < alpha of 0.05 (reject the null hypothesis, accept the alternative hypothesis stating that median salary does not differ significantly between male and female PhD recipients in non-postdoc employment positions (ranks are not equal)
+```
+
+```{r, echo = FALSE}
+#Running Cliff's Delta as a form of post-hoc testing for male and female students with their non-postdoc positions 
+
+#Creating two new variables with the data from male and female postdoc positions called Apost for male postdoc students and Bpost for female postdoc students
+Aemply <- c(78000, 75000, 75000, 80000, 75167, 95000, 105000, 63000, 105000, 64000, 95000, 71000, 52000, 123500, 62800)
+Bemply <- c(66000, 66000, 75000, 75000, 71750, 97650, 90000, 60000, 95750, 62000, 90000, 63000, 50000, 120000, 61000)
+
+#Running the Cliff's Delta test
+empltest <- cliff.delta(Aemply, Bemply)
+
+empltest
+#Results: Delta's estimate: 0.21333 (small)
+```
+
+```{r, echo = FALSE}
+#Running Cliff's Delta as a form of post-hoc testing for male and female students with their postdoc positions 
+
+#Creating two new variables with the data from male and female postdoc positions called Cpost for male postdoc students and Dpost for female postdoc students 
+
+Cpost <- c(42750, 42000, 43000, 42000, 50000, 50000, 58000, 42000, 65000, 48000, 45000, 50000, 45000, 60000, 50000)
+Dpost <- c(44000, 42000, 43250, 42000, 50000, 53000, 55000, 42000, 65000, 49250, 45000, 45000, 45000, 63500, 44000) 
+
+#Running the Cliff's Delta Test 
+cdposttest <- cliff.delta(Cpost, Dpost)
+
+cdposttest
+
+#Results: Delta's estimate: 0.04 (negligible)
+
+```
+
