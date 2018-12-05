@@ -173,11 +173,11 @@ enrollment_graph
 
 ```
 
-**Figure 1. Graduate strudent enrollment by year from 1967 to 2015.** Fall enrollment of female and male students each year from 1967 to 2015.  *SOURCE: U.S. Department of Education, National Center for Education Statistics, Higher Education General Information Survey (HEGIS), "Fall Enrollment in Colleges and Universities" surveys, 1967 through 1985; Integrated Postsecondary Education Data System (IPEDS), "Fall Enrollment Survey" (IPEDS-EF:86-99); IPEDS Spring 2001 through Spring 2016, Fall Enrollment component. Prepared February 2017.*	
+**Figure 1. Graduate strudent enrollment by year from 1967 to 2015.** Fall enrollment of female and male students each year from 1967 to 2015.  *Source: U.S. Department of Education, National Center for Education Statistics, Higher Education General Information Survey (HEGIS), "Fall Enrollment in Colleges and Universities" surveys, 1967 through 1985; Integrated Postsecondary Education Data System (IPEDS), "Fall Enrollment Survey" (IPEDS-EF:86-99); IPEDS Spring 2001 through Spring 2016, Fall Enrollment component. Prepared February 2017.*	
 
-Graduate enrollment of female students is significantly predicted by year (*b* = 30126, t(`r pearsonsr_f_enrollment_year$parameter`) = `r round(pearsonsr_f_enrollment_year$statistic,2)`, *p* < 0.001) with a strong positive correlation between the two (Pearson's *r* = `r round(pearsonsr_f_enrollment_year$estimate,2)`. The model (*enrolled students* = 30126(*Year*) - 58955502) explains a significant amount of variance in female graduate student enrollment (F(1,47) = 2669, *p* < 0.001, $R^2$ = 0.98).
+Graduate enrollment of female students is significantly predicted by year (*b* = 30126, t(`r pearsonsr_f_enrollment_year$parameter`) = `r round(pearsonsr_f_enrollment_year$statistic,2)`, *p* < 0.001) with a strong positive correlation between the two (Pearson's *r* = `r round(pearsonsr_f_enrollment_year$estimate,2)`. The model (*enrolled students* = 30126(*Year*) - 58955502) explains a significant amount of variance in female graduate student enrollment (F(1,47) = 2669, *p* < 0.001, R^2^ = 0.98).
 
-Similarly, the model (*enrolled students* = 9069(*Year*) - 17112153) explains a significant amount of variance in male graduate student enrollment (F(1,47) = 276, *p* < 0.001, $R^2$ = 0.85). Graduate enrollment of male students is also significantly predicted by year (*b* = 9069, t(`r pearsonsr_m_enrollment_year$parameter`) = `r round(pearsonsr_m_enrollment_year$statistic,2)`, *p* < 0.001) with a strong positive correlation between the two (Pearson's *r* = `r round(pearsonsr_m_enrollment_year$estimate,2)`.
+Similarly, the model (*enrolled students* = 9069(*Year*) - 17112153) explains a significant amount of variance in male graduate student enrollment (F(1,47) = 276, *p* < 0.001, R^2^ = 0.85). Graduate enrollment of male students is also significantly predicted by year (*b* = 9069, t(`r pearsonsr_m_enrollment_year$parameter`) = `r round(pearsonsr_m_enrollment_year$statistic,2)`, *p* < 0.001) with a strong positive correlation between the two (Pearson's *r* = `r round(pearsonsr_m_enrollment_year$estimate,2)`.
 
 Graduate enrollment generally increased for both male and female students from 1967 to 2015, though enrollment of female graduate students increased faster than enrollment of male students. In 1967 women comprised 29.6% of all enrolled graduate students. The sex ratio of graduate students switched from to male-biased to female biased in 1988 when the percentage of female students increased from 49.8% of all students in 1987 to 50.3% in 1988. By 2015, 58.5% of graduate students were female.  In recent years, enrollment leveled and even decreased slightly staring in 2010 following the 2008/2009 financial crisis.
 
@@ -281,12 +281,19 @@ by_yrs_service
 
 # Similar trend, but not the same. Might be collinear. Should test.
 
+by_yrs_interaction <- ggplot(faculty_salary_2008_2009, aes(x = salary, y = years_service*years_since_phd)) +
+  geom_point(aes(color = rank, pch = sex), alpha = 0.5) +
+  facet_wrap(~field_name)
+
+by_yrs_interaction
+
+
 ```
 
-```{r}
+```{r, include = FALSE}
 # Part 4. Exploring academic salaries for professors in U.S. colleges.
 # Faculty salary by rank, discipline, experience and sex
-# GLM with all factors
+# LM with all factors
 
 faculty_salary_lm1 <- lm(salary ~ rank + field_name + sex + years_since_phd + years_service, data = faculty_salary_2008_2009)
 
@@ -297,7 +304,7 @@ summary(faculty_salary_lm1)
 ```{r}
 # Part 4. Exploring academic salaries for professors in U.S. colleges.
 # Faculty salary by rank, discipline, experience and sex
-# GLM with all factors 
+# LM with all factors 
 # change rank reference level from AssocProf to AsstProf since it is the lowest. change from character to factor
 
 faculty_salary_2008_2009$rank <- factor(faculty_salary_2008_2009$rank)
@@ -309,38 +316,70 @@ faculty_salary_lm2 <- lm(salary ~ rank + field_name + sex + years_since_phd + ye
 summary(faculty_salary_lm2)
 ```
 
-```{r}
+```{r, include = FALSE}
 # Part 4. Exploring academic salaries for professors in U.S. colleges.
 # Faculty salary by rank, discipline, experience and sex
-# GLM - remove years_service
+# LM - remove years_service
 
 faculty_salary_lm3 <- lm(salary ~ rank + field_name + sex + years_since_phd, data = faculty_salary_2008_2009)
 
 summary(faculty_salary_lm3)
 ```
 
-```{r}
+```{r, include = FALSE}
 # Part 4. Exploring academic salaries for professors in U.S. colleges.
 # Faculty salary by rank, discipline, experience and sex
-# GLM - remove years_since phd
+# LM - remove years_since phd
 
 faculty_salary_lm4 <- lm(salary ~ rank + field_name + sex + years_service, data = faculty_salary_2008_2009)
 
 summary(faculty_salary_lm4)
 ```
 
-```{r}
+```{r, include = FALSE}
 # Part 4. Exploring academic salaries for professors in U.S. colleges.
 # Faculty salary by rank, discipline, experience and sex
-# GLM - for kicks, remove years experience
+# LM - for kicks, remove years experience
 
 faculty_salary_lm5 <- lm(salary ~ rank + field_name + sex, data = faculty_salary_2008_2009)
 
 summary(faculty_salary_lm5)
 ```
 
+```{r}
+# Part 4. Exploring academic salaries for professors in U.S. colleges.
+# Faculty salary by rank, discipline, experience and sex
+# LM with all factors 
+# Add interaction term between yrs_service and yrs_since_phd
 
-```{r, include=FALSE}
+faculty_salary_lm6 <- lm(salary ~ rank + field_name + sex + years_since_phd + years_service + years_since_phd*years_service, data = faculty_salary_2008_2009)
+
+summary(faculty_salary_lm6)
+```
+
+```{r}
+# Part 4. Exploring academic salaries for professors in U.S. colleges.
+# Faculty salary by rank, discipline, experience and sex
+# LM with all factors  - remove sigle factors yrs_service and yrs_since_phd
+# Add interaction term between yrs_service and yrs_since_phd
+
+faculty_salary_lm7 <- lm(salary ~ rank + field_name + sex + years_since_phd*years_service, data = faculty_salary_2008_2009)
+
+summary(faculty_salary_lm7) # This is the same exact model as lm6
+```
+
+```{r}
+# Part 4. Exploring academic salaries for professors in U.S. colleges.
+# Faculty salary by rank, discipline, experience and sex
+# LM with all factors  - remove experience
+
+faculty_salary_lm8 <- lm(salary ~ rank + field_name + sex, data = faculty_salary_2008_2009)
+
+summary(faculty_salary_lm8)
+```
+
+
+```{r, include = FALSE}
 # Part 4. Exploring academic salaries for professors in U.S. colleges.
 # Faculty salary by rank, discipline, experience and sex
 # Model Diagnostics all factors - Model 2
@@ -353,22 +392,39 @@ plot(faculty_salary_lm5)
 
 # This didn't help explain anything. Only categorical variables are in this model, but still more variance at higher values than lower values.
 
+plot(faculty_salary_lm6)
+
+# Heteroscedasticity is a little better.
+
+plot(faculty_salary_lm8)
+
 ```
 
-```{r}
+```{r, include = FALSE}
 # Part 4. Exploring academic salaries for professors in U.S. colleges.
 # Faculty salary by rank, discipline, experience and sex
 # AIC values for each model
 
-sat_aic <- AIC(faculty_salary_lm2) # Lowest AIC value
-phd_aic <- AIC(faculty_salary_lm3)
-service_aic <- AIC(faculty_salary_lm4)
-remove_exp_aic <- AIC(faculty_salary_lm5)
+sat_aic <- AIC(faculty_salary_lm2) # 9093.8
+phd_aic <- AIC(faculty_salary_lm3) # 9097.2
+service_aic <- AIC(faculty_salary_lm4) # 9096.8
+remove_exp_aic <- AIC(faculty_salary_lm5) # 9095.5
+interaction_aic <- AIC(faculty_salary_lm6) # 9088.6   Lowest AIC value
+interaction_only_aic <- AIC(faculty_salary_lm7) # 9088.6
+simple_aic <- AIC(faculty_salary_lm7) # 9088.6
+
+```
+
+```{r}
+# Test collinearity
+
+vif(faculty_salary_lm2)
+vif(faculty_salary_lm6)
 
 ```
 
 
-```{r stargazer, results = 'asis'}
+```{r stargazer1, results = 'asis', echo = FALSE, include = FALSE}
 # Part 4. Exploring academic salaries for professors in U.S. colleges.
 # Faculty salary by rank, discipline, experience and sex
 # Prepare regression table
@@ -382,4 +438,37 @@ lm_table_2 <- stargazer(faculty_salary_lm2, faculty_salary_lm3, faculty_salary_l
 lm_table_2
 
 ```
-End code for now 11/30/18 JKM
+
+
+**Table 2. Faculty salary regression results.** Results of three multiple linear regression models assessing factors impacting faculty 9 month salary (USD) from 2008 to 2009 (n = 397). Factors include faculty rank (Full, Associate, or Assistant Professor), discipline (Applied or Theoretical), sex, years since PhD was earned, and years of service. The first model includes all factors (AIC = 9093.8, Adjusted R^2^ = 0.446). The second model includes all factors plus an interaction term between years since PhD was earned and years of service (AIC = 9088.6, Adjusted R^2^ = 0.455). The third model includes only faculty rank, disciple, and sex (AIC = 9088.6, Adjusted R^2^ = 0.441). *Source: Fox J. and Weisberg, S. (2011). An R Companion to Applied Regression, Second Edition Sage.*
+```{r stargazer2, results = 'asis', echo = FALSE}
+# Part 4. Exploring academic salaries for professors in U.S. colleges.
+# Faculty salary by rank, discipline, experience and sex
+# Prepare regression table
+
+# Possibly the final table
+
+lm_table_3 <- stargazer(faculty_salary_lm2, faculty_salary_lm6, faculty_salary_lm8, type = "html")
+lm_table_3
+
+```
+
+
+We developed three separate models with multiple linear regression to explain which factors may predict faculty 9 month salary in 2008 and 2009. Factors include faculty rank (Full, Associate, or Assistant Professor), discipline (Applied or Theoretical), sex, years since PhD was earned, and years of service (**Table 2**). 
+
+The first model includes all factors predicting faculty salary (*salary* = 80,372.860 + 12,907.590(*rankAssocProf*) + 45,066.000(*rankProf*) - 14,417.630(*field_nameTheoretical*) + 4,783.493(*sexMale*) + 535.058(*years_since_phd*) - 489.516(*years_service*)) and explains a significant amount of variance (F(6,390) = 54.2, *p* < 0.001, Adjusted R^2^ = 0.446, AIC = 9093.8). 
+
+Salary increased significantly with ascending rank, with Associate Professors (t(390) = 3.11, *p* = 0.002) earning about $13,000 more than Assistant Professors, and full Professors (t(390) = 10.6, *p* < 0.001) earning about 45,000 more than Assistant Professors. This is consistent with findings by the AAUP (2018). Faculty in Theoretical disciplines earned significantly less than those in Applied fields (*b* = -14418, t(390) = -6.15, *p* < 0.001). Though on average male faculty members were found to earn more than female faculty members, this factor was not a significant predictor of salary (*b* = 4784, t(390) = 1.24, *p* = 0.22), 
+
+The two experience-related factors, years since PhD earned (*b* = 535, t(390) = 2.22, *p* = 0.027) and years service (*b* = -490, t(390) = -2.31, *p* = 0.021), were also significant predictors of salary in this model. However, the ways is which years service impacted salary was counter-intuitive. One would expect that as years since the PhD was earned and the years of service increase, presumably at the same rate, so would salary. A VIF test for collinearity suggested that these two factors may be collinear. To adjust for this we ran a second model that included all factors plus an interaction term between years since PhD was earned and years of service (*salary* = 75,594.920 + 6,140.317(*rankAssocProf*) + 34,357.940(*rankProf*) - 14,316.700(*field_nameTheoretical*) + 5,448.304(*sexMale*) + 1,032.650(*years_since_phd*) + 348.108(*years_service*) - 24.691(*years_since_phd*:*years_service*)). It shows similar trends to the first model and also explains a significant amount of variance in faculty salary (F(7,389) = 48.2, *p* < 0.001, Adjusted R^2^ = 0.455, AIC = 9088.6).
+
+Conceptually this makes sense that both years since PhD and years service would predict an increase in salary, while the interaction term accounts for the differences in these factors. For example, two faculty members that earned their PhDs at the same time but were hired at different times may earn different salaries. In this model the years since PhD (*b* = 1032, t(389) = 3.41, *p* < 0.001) and the interaction term (*b* = -24.7, t(389) = -2.679, *p* = 0.008) were significant, and years service was not (*b* = 348, t(389) = 0.92, *p* = 0.36).
+
+Since years of experience may be a confounding factor we ran a third model that included only faculty rank, disciple, and sex (*salary* = 81,932.220 + 13,723.420(*rankAssocProf*) + 47,403.320(*rankProf*) - 13,708.690(*field_nameTheoretical*) + 4,491.801(*sexMale*)). This model explained a significant amount of variance in faculty salary (F(4,392) = 79.2, *p* < 0.001, Adjusted R^2^ = 0.441, AIC = 9088.6), as well. In all cases, the sex of the faculty member was not a significant predictor of salary even though the male faculty members consistently earned around $5000 more than their female colleagues.
+
+
+
+
+
+
+
